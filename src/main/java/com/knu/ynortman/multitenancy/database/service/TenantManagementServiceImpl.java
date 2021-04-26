@@ -100,7 +100,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         try (Connection connection = DriverManager.getConnection(url, db, password)) {
             DataSource tenantDataSource = new SingleConnectionDataSource(connection, false);
             runLiquibase(tenantDataSource);
-            log.info("Liquibase ran for tenant " + tenantId);
+
+            log.info("Tenant Management Service Impl Liquibase ran for tenant " + tenantId);
         } catch (SQLException | LiquibaseException e) {
             throw new TenantCreationException ("Error when populating db: ", e);
         }
@@ -123,7 +124,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         return tenantRepository.findByTenantId(tenantId);
     }
 
-    private void createDatabase(String db, String password) {
+    @Override
+    public void createDatabase(String db, String password) {
         log.info("BEFORE DATABASE CREATE");
         jdbcTemplate.execute((StatementCallback<Boolean>) stmt ->
                 stmt.execute("CREATE DATABASE " + db));

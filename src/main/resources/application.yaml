@@ -42,7 +42,7 @@ multitenancy:
   master:
     schema: master
     repository:
-      packages: com.knu.ynortman.multitenancy.database.repository
+      packages: com.knu.ynortman.multitenancy
     entityManager:
       packages: com.knu.ynortman.multitenancy
     datasource:

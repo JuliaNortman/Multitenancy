@@ -24,7 +24,10 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Based on MultiTenantSpringLiquibase, this class provides Liquibase support for
@@ -41,6 +44,9 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
 
     /*@Autowired
     private TenantRepository tenantRepository;*/
+
+    @Autowired
+    private AsyncLiquibase asyncLiquibase;
 
     @Autowired
     @Qualifier("tenantLiquibaseProperties")
@@ -64,24 +70,38 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
     }
 
     protected void runOnAllTenants(Collection<Tenant> tenants) {
+        Collection<Future<String>> futures = new ArrayList<>(tenants.size());
         for(Tenant tenant : tenants) {
             String decryptedPassword = encryptionService.decrypt(tenant.getPassword(), secret, salt);
             try {
-                tenantManagementService.createTenant(tenant.getTenantId(), tenant.getDb(), decryptedPassword);
-            } catch (TenantCreationException e) {
+                tenantManagementService.createDatabase(tenant.getDb(), decryptedPassword);
+            } catch (Exception e) {
                 log.warn(e.getMessage());
             }
             log.info("Initializing Liquibase for tenant " + tenant.getTenantId());
             try (Connection connection = DriverManager.getConnection(
                     tenant.getUrl(), tenant.getDb(), decryptedPassword)) {
-                DataSource tenantDataSource = new SingleConnectionDataSource(connection, false);
+                DataSource tenantDataSource = new SingleConnectionDataSource(connection, true);
                 SpringLiquibase liquibase = this.getSpringLiquibase(tenantDataSource);
                 liquibase.afterPropertiesSet();
             } catch (SQLException | LiquibaseException e) {
                 log.error("Failed to run Liquibase for tenant " + tenant.getTenantId(), e);
             }
+            /*try {
+                futures.add(asyncLiquibase.runLiquibase(tenant.getUrl(), tenant.getDb(), decryptedPassword, resourceLoader));
+            } catch (LiquibaseException e) {
+                log.warn("Liquibase exception");
+                log.warn(e.getMessage());
+            }*/
             log.info("Liquibase ran for tenant " + tenant.getTenantId());
         }
+        /*for(Future<String> future : futures) {
+            try {
+                log.info(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                log.warn(e.getMessage());
+            }
+        }*/
     }
 
     protected SpringLiquibase getSpringLiquibase(DataSource dataSource) {

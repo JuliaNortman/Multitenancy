@@ -15,26 +15,28 @@ import org.springframework.web.context.request.WebRequestInterceptor;
 @Slf4j
 public class TenantInterceptor implements WebRequestInterceptor {
 
-    private final String defaultTenant;
+    private final String HEADER = "X-TENANT-ID";
+    /*private final String defaultTenant;
 
     @Autowired
     public TenantInterceptor(
             @Value("${multitenancy.tenant.default-tenant:#{null}}") String defaultTenant) {
         this.defaultTenant = defaultTenant;
         log.info("Default tenant: " + defaultTenant);
-    }
+    }*/
 
     @Override
     public void preHandle(WebRequest request) {
-        String tenantId;
-        if (request.getHeader("X-TENANT-ID") != null) {
-            tenantId = request.getHeader("X-TENANT-ID");
+        /*String tenantId;
+        if (request.getHeader(HEADER) != null) {
+            tenantId = request.getHeader(HEADER);
         } else if (this.defaultTenant != null) {
             tenantId = this.defaultTenant;
         } else {
             tenantId = ((ServletWebRequest)request).getRequest().getServerName().split("\\.")[0];
-        }
-        TenantContext.setTenantId(tenantId);
+        }*/
+        //TenantContext.setTenantId(tenantId);
+        TenantContext.setTenantId(request.getHeader(HEADER));
         log.info("SELECTED TENANT ID IS " + TenantContext.getTenantId());
         //log.info("HERE");
     }
