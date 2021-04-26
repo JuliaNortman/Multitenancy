@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <property name="blob_type" value="bytea" dbms="postgresql" />
+
+    <changeSet id="1" author="postgres">
+        <createTable tableName="product">
+            <column name="id" type="int">
+                <constraints primaryKey="true"
+                             primaryKeyName="product_pk"/>
+            </column>
+            <column name="name" type="varchar">
+                <constraints nullable="false" />
+            </column>
+            <column name="price" type="float">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="product"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="4" author="postgres">
+        <loadUpdateData
+                file="../data/products.csv"
+                primaryKey="id"
+                relativeToChangelogFile="true"
+                separator=","
+                tableName="product">
+
+            <column  header="id"
+                     name="id"
+                     type="numeric"/>
+            <column  header="name"
+                     name="name"
+                     type="string"/>
+            <column  header="price"
+                     name="price"
+                     type="numeric"/>
+        </loadUpdateData>
+    </changeSet>
+
+</databaseChangeLog>

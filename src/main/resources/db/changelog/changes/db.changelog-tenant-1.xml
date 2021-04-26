@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd
+      http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.8.xsd">
+
+    <property name="blob_type" value="bytea" dbms="postgresql" />
+
+
+
+    <changeSet id="2" author="postgres">
+        <createTable tableName="user_details">
+            <column name="id" type="int">
+                <constraints primaryKey="true"
+                             primaryKeyName="user_pk"/>
+            </column>
+            <column name="name" type="varchar">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <rollback>
+            <dropTable tableName="user_details"/>
+        </rollback>
+    </changeSet>
+
+
+
+    <changeSet id="3" author="postgres">
+        <createTable tableName="order_details">
+            <column name="id" type="int">
+                <constraints primaryKey="true"
+                             primaryKeyName="order_pk"/>
+            </column>
+            <column name="user_id" type="int" />
+            <column name="product_id" type="int" />
+            <column name="address" type="varchar" />
+
+        </createTable>
+
+        <addForeignKeyConstraint constraintName="user_order_fk"
+                                 referencedTableName="user_details" baseColumnNames="user_id"
+                                 baseTableName="order_details" referencedColumnNames="id"
+                                 onDelete="CASCADE" onUpdate="CASCADE"/>
+
+        <rollback>
+            <dropTable tableName="order_details"/>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="5" author="postgres">
+        <loadUpdateData
+                file="../data/users.csv"
+                primaryKey="id"
+                relativeToChangelogFile="true"
+                separator=","
+                tableName="user_details">
+
+            <column  header="id"
+                     name="id"
+                     type="numeric"/>
+            <column  header="name"
+                     name="name"
+                     type="string"/>
+        </loadUpdateData>
+    </changeSet>
+
+</databaseChangeLog>

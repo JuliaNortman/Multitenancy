@@ -1,0 +1,69 @@
+#spring.datasource.url=jdbc:postgresql://localhost:5432/singletenant
+#spring.datasource.username=postgres
+#spring.datasource.password=oK16081969
+#spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring:
+  #datasource:
+    #url: jdbc:postgresql://localhost:5432/schemadb
+    #username: postgres
+    #password: oK16081969
+
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+multitenancy:
+  strategy: database
+
+  default-tenant:
+    repository:
+      packages: com.knu.ynortman.sharedrepository
+    entityManager:
+      packages: com.knu.ynortman.entity
+    datasource:
+      url: jdbc:postgresql://localhost:5432/common
+      username: postgres
+      password: oK16081969
+    liquibase:
+      enabled: true
+      changeLog: classpath:db/changelog/db.changelog-common.yaml
+
+  datasource-cache:
+    maximumSize: 100
+    expireAfterAccess: 10
+  schema-cache:
+    maximumSize: 100
+    expireAfterAccess: 10
+
+  master:
+    schema: master
+    repository:
+      packages: com.knu.ynortman.multitenancy.database.repository
+    entityManager:
+      packages: com.knu.ynortman.multitenancy
+    datasource:
+      url: jdbc:postgresql://localhost:5432/masterdb
+      username: postgres
+      password: oK16081969
+    liquibase:
+      enabled: false
+      #changeLog: classpath:db/changelog/db.changelog-master.yaml
+  tenant:
+    repository:
+      packages: com.knu.ynortman.repository
+    entityManager:
+      packages: com.knu.ynortman.entity
+    datasource:
+      hikari:
+        maximumPoolSize: 2
+        minimumIdle: 0
+        idleTimeout: 30000
+    liquibase:
+      changeLog: classpath:db/changelog/db.changelog-tenant.yaml
+encryption:
+  secret: verySecret
+  salt: jozo
