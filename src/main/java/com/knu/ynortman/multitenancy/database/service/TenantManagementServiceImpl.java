@@ -47,10 +47,6 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     private final String secret;
     private final String salt;
 
-    private final String CREATE_DB = "CREATE DATABASE ?";
-    private final String CREATE_USER = "CREATE USER ? WITH ENCRYPTED PASSWORD ?";
-    private final String GRANT_PRIVILEGIES = "GRANT ALL PRIVILEGES ON DATABASE ? TO ?";
-
     @Autowired
     public TenantManagementServiceImpl(EncryptionService encryptionService,
                                        @Qualifier("masterDataSource") DataSource dataSource,
@@ -76,7 +72,7 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         this.urlPrefix = "jdbc:postgresql://localhost:5432/";
         this.secret = secret;
         this.salt = salt;
-        log.info("TENANT MANAGEMENT SERVICE");
+        log.info("TENANT MANAGEMENT SERVICE"); 
     }
 
     private static final String VALID_DATABASE_NAME_REGEXP = "[A-Za-z0-9_]*";

@@ -6,10 +6,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Builder 
 public class UserDto {
     private long id;
     private String name;

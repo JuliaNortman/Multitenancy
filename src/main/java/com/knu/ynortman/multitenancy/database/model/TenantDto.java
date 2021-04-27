@@ -5,10 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@Data 
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder 
 public class TenantDto {
     private String tenantId;
     private String db;

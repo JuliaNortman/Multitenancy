@@ -1,4 +1,4 @@
-package com.knu.ynortman.multitenancy.config.master;
+package com.knu.ynortman.multitenancy.database.config.master;
 
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class MasterPersistenceConfig {
         this.entityPackages = entityPackages;
     }
 
-    @Bean
+    @Bean 
     public LocalContainerEntityManagerFactoryBean masterEntityManagerFactory(
             @Qualifier("masterDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();

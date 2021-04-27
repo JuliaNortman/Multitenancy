@@ -69,7 +69,6 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
 
     @PostConstruct
     private void createCache() {
-        log.info("CREATE CACHE");
         tenantDataSources = CacheBuilder.newBuilder()
                 .maximumSize(maximumSize)
                 .expireAfterAccess(expireAfterAccess, TimeUnit.MINUTES)
@@ -85,7 +84,6 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
                         return createAndConfigureDataSource(tenant);
                     }
                 });
-        log.info("CACHE CREATED");
     }
 
     @Override

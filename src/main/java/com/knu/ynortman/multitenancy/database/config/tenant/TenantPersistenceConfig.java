@@ -47,7 +47,7 @@ public class TenantPersistenceConfig {
             JpaProperties jpaProperties,
             @Value("${multitenancy.tenant.entityManager.packages}")
                     String entityPackages) {
-        log.info("TENANT PERSISTENCE CONFIG");
+        log.info("TENANT PERSISTENCE CONFIG"); 
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = entityPackages;

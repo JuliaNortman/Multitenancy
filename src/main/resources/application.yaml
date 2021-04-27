@@ -2,6 +2,8 @@
 #spring.datasource.username=postgres
 #spring.datasource.password=oK16081969
 #spring.datasource.driver-class-name=org.postgresql.Driver
+aspect:
+  enabled: true
 
 spring:
   #datasource:

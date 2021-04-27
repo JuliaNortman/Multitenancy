@@ -5,8 +5,10 @@ import com.knu.ynortman.multitenancy.exception.TenantCreationException;
 //import com.knu.ynortman.multitenancy.database.repository.TenantRepositoryDb;
 import com.knu.ynortman.multitenancy.service.EncryptionService;
 import com.knu.ynortman.multitenancy.database.service.TenantManagementService;
+import com.knu.ynortman.multitenancy.util.aop.TrackExecutionTime;
 import liquibase.exception.LiquibaseException;
 import liquibase.integration.spring.SpringLiquibase;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -46,6 +49,9 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
     private TenantRepository tenantRepository;*/
 
     @Autowired
+    private LiquibaseRunner LiquibaseRunner;
+    
+    @Autowired
     private AsyncLiquibase asyncLiquibase;
 
     @Autowired
@@ -66,10 +72,11 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
     @Override
     public void afterPropertiesSet() {
         log.info("DynamicDataSources based multitenancy enabled");
-        this.runOnAllTenants(tenantManagementService.findAll());
+        LiquibaseRunner.runOnAllTenants(tenantManagementService.findAll(), resourceLoader);
     }
 
-    protected void runOnAllTenants(Collection<Tenant> tenants) {
+    //@TrackExecutionTime
+    /*protected void runOnAllTenants(Collection<Tenant> tenants) {
         Collection<Future<String>> futures = new ArrayList<>(tenants.size());
         for(Tenant tenant : tenants) {
             String decryptedPassword = encryptionService.decrypt(tenant.getPassword(), secret, salt);
@@ -77,8 +84,9 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
                 tenantManagementService.createDatabase(tenant.getDb(), decryptedPassword);
             } catch (Exception e) {
                 log.warn(e.getMessage());
-            }
+            } 
             log.info("Initializing Liquibase for tenant " + tenant.getTenantId());
+            long startTime = System.currentTimeMillis();
             try (Connection connection = DriverManager.getConnection(
                     tenant.getUrl(), tenant.getDb(), decryptedPassword)) {
                 DataSource tenantDataSource = new SingleConnectionDataSource(connection, true);
@@ -87,14 +95,17 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
             } catch (SQLException | LiquibaseException e) {
                 log.error("Failed to run Liquibase for tenant " + tenant.getTenantId(), e);
             }
+            long endtime = System.currentTimeMillis();
+            log.info("Time taken for Execution is : " + (endtime-startTime) +"ms");
+
             /*try {
                 futures.add(asyncLiquibase.runLiquibase(tenant.getUrl(), tenant.getDb(), decryptedPassword, resourceLoader));
             } catch (LiquibaseException e) {
                 log.warn("Liquibase exception");
                 log.warn(e.getMessage());
             }*/
-            log.info("Liquibase ran for tenant " + tenant.getTenantId());
-        }
+            //log.info("Liquibase ran for tenant " + tenant.getTenantId());
+        //}
         /*for(Future<String> future : futures) {
             try {
                 log.info(future.get());
@@ -102,9 +113,9 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
                 log.warn(e.getMessage());
             }
         }*/
-    }
+    //}
 
-    protected SpringLiquibase getSpringLiquibase(DataSource dataSource) {
+    /*protected SpringLiquibase getSpringLiquibase(DataSource dataSource) {
         SpringLiquibase liquibase = new SpringLiquibase();
         liquibase.setResourceLoader(getResourceLoader());
         liquibase.setDataSource(dataSource);
@@ -121,6 +132,8 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
         liquibase.setRollbackFile(liquibaseProperties.getRollbackFile());
         liquibase.setTestRollbackOnUpdate(liquibaseProperties.isTestRollbackOnUpdate());
         return liquibase;
-    }
-
+    }*/
+    
+    
+    
 }

@@ -1,9 +1,6 @@
 package com.knu.ynortman.controller;
 
-import com.knu.ynortman.dto.ProductDto;
-import com.knu.ynortman.multitenancy.util.TenantContext;
 import com.knu.ynortman.dto.UserDto;
-import com.knu.ynortman.service.ProductService;
 import com.knu.ynortman.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -28,7 +28,7 @@ public class AsyncLiquibase {
     @Qualifier("tenantLiquibaseProperties")
     private LiquibaseProperties liquibaseProperties;
 
-    @Async
+    @Async 
     public Future<String> runLiquibase(String url, String db, String pswrd, ResourceLoader resourceLoader)
             throws LiquibaseException {
         log.info("AsyncWorkerFuture: start current thread [" + Thread.currentThread().getName() + "]");

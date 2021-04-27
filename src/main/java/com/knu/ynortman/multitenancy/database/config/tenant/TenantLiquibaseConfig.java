@@ -32,7 +32,7 @@ public class TenantLiquibaseConfig {
 
     @Bean
     public InitializingBean tenantLiquibase() {
-        log.info("Strategy " + multitenantStrategy);
+        log.info("Strategy " + multitenantStrategy); 
         return new DynamicDataSourceBasedMultiTenantSpringLiquibase();
         /*if(multitenantStrategy.equals("database")) {
             return new DynamicDataSourceBasedMultiTenantSpringLiquibase();

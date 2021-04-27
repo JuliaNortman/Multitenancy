@@ -38,6 +38,7 @@ public class TenantInterceptor implements WebRequestInterceptor {
         //TenantContext.setTenantId(tenantId);
         TenantContext.setTenantId(request.getHeader(HEADER));
         log.info("SELECTED TENANT ID IS " + TenantContext.getTenantId());
+        //log.info("SELECTED TENANT ID IS " + TenantContext.getTenantId());
         //log.info("HERE");
     }
 

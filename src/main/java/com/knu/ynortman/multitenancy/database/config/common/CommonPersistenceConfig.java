@@ -45,7 +45,7 @@ public class CommonPersistenceConfig {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = entityPackages;
-        log.info("COMMON PERSISTENCE CONFIG");
+        log.info("COMMON PERSISTENCE CONFIG"); 
     }
 
     @Bean

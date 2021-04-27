@@ -9,7 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Data
+@Data 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

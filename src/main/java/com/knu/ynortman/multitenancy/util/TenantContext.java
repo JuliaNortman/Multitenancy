@@ -10,7 +10,7 @@ public final class TenantContext {
     private static final InheritableThreadLocal<String> currentTenant = new InheritableThreadLocal<>();
 
     public static void setTenantId(String tenantId) {
-        log.debug("Setting tenantId to " + tenantId);
+    	log.debug("Setting tenantId to " + tenantId);
         currentTenant.set(tenantId);
     }
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/tenants")
-@Slf4j
+@Slf4j 
 public class TenantsApiController {
 
     @Autowired(required = false)
