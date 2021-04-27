@@ -69,11 +69,12 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
     @Autowired
     private TenantManagementService tenantManagementService;
 
-    @Override
-    public void afterPropertiesSet() {
-        log.info("DynamicDataSources based multitenancy enabled");
-        LiquibaseRunner.runOnAllTenants(tenantManagementService.findAll(), resourceLoader);
-    }
+	@Override
+	public void afterPropertiesSet() {
+		log.info("DynamicDataSources based multitenancy enabled");
+		LiquibaseRunner.runAllTenantsAsync(tenantManagementService.findAll(), resourceLoader);
+		//LiquibaseRunner.runAllTenantsSync(tenantManagementService.findAll(), resourceLoader);
+	}
 
     //@TrackExecutionTime
     /*protected void runOnAllTenants(Collection<Tenant> tenants) {
