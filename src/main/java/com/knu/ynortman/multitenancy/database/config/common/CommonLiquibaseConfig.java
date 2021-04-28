@@ -2,6 +2,7 @@ package com.knu.ynortman.multitenancy.database.config.common;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,6 +15,8 @@ import javax.sql.DataSource;
 @Lazy(false)
 @Configuration
 @EnableConfigurationProperties(LiquibaseProperties.class)
+@ConditionalOnProperty(name = "multitenancy.default-tenant.liquibase.enabled", havingValue = "true",
+matchIfMissing = true)
 public class CommonLiquibaseConfig {
     @Bean
     @ConfigurationProperties("multitenancy.default-tenant.liquibase")

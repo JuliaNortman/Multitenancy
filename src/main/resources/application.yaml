@@ -52,8 +52,8 @@ multitenancy:
       username: postgres
       password: oK16081969
     liquibase:
-      enabled: false
-      #changeLog: classpath:db/changelog/db.changelog-master.yaml
+      enabled: true
+      changeLog: classpath:db/changelog/db.changleog-master.yaml
   tenant:
     repository:
       packages: com.knu.ynortman.repository

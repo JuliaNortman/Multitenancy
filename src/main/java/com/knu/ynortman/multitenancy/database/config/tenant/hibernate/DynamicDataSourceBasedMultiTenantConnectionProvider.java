@@ -110,7 +110,7 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
         ds.setUsername(tenant.getDb());
         ds.setPassword(decryptedPassword);
         ds.setJdbcUrl(tenant.getUrl());
-        
+        ds.setDriverClassName(tenant.getDriver());
         
         ds.setPoolName(tenant.getTenantId() + TENANT_POOL_NAME_SUFFIX);
 

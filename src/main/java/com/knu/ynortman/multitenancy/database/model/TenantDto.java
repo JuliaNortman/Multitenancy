@@ -13,4 +13,5 @@ public class TenantDto {
     private String tenantId;
     private String db;
     private String password;
+    private String driver;
 }

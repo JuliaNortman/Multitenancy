@@ -21,6 +21,7 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Service;
 
 import com.knu.ynortman.multitenancy.database.entity.Tenant;
+import com.knu.ynortman.multitenancy.database.model.TenantDto;
 import com.knu.ynortman.multitenancy.database.repository.TenantRepository;
 import com.knu.ynortman.multitenancy.exception.TenantCreationException;
 import com.knu.ynortman.multitenancy.service.EncryptionService;
@@ -75,36 +76,38 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     private static final String VALID_DATABASE_NAME_REGEXP = "[A-Za-z0-9_]*";
 
     @Override
-    public void createTenant(String tenantId, String url, String password) throws TenantCreationException {
+    public void createTenant(TenantDto tenant) throws TenantCreationException {
 
+    	String url = tenant.getDb();
     	String db = url.substring(url.lastIndexOf('/')+1, url.length());   	
         // Verify db string to prevent SQL injection
         if (!db.matches(VALID_DATABASE_NAME_REGEXP)) {
             throw new TenantCreationException("Invalid db name: " + db);
         }
         
-        String encryptedPassword = encryptionService.encrypt(password, secret, salt);
+        String encryptedPassword = encryptionService.encrypt(tenant.getPassword(), secret, salt);
         try {
-            createDatabase(db, password);
+            createDatabase(db, tenant.getPassword());
         } catch (DataAccessException e) {
             //log.error("Error when creating db: " + db);
             throw new TenantCreationException("Error when creating db: " + db, e);
         }
-        try (Connection connection = DriverManager.getConnection(url, db, password)) {
+        try (Connection connection = DriverManager.getConnection(url, db, tenant.getPassword())) {
             DataSource tenantDataSource = new SingleConnectionDataSource(connection, false);
             runLiquibase(tenantDataSource);
 
-            log.info("Tenant Management Service Impl Liquibase ran for tenant " + tenantId);
+            log.info("Tenant Management Service Impl Liquibase ran for tenant " + tenant.getTenantId());
         } catch (SQLException | LiquibaseException e) {
             throw new TenantCreationException ("Error when populating db: ", e);
         }
-        Tenant tenant = Tenant.builder()
-                .tenantId(tenantId)
+        Tenant t = Tenant.builder()
+                .tenantId(tenant.getTenantId())
                 .db(db)
                 .url(url)
                 .password(encryptedPassword)
+                .driver(tenant.getDriver())
                 .build();
-        tenantRepository.save(tenant);
+        tenantRepository.save(t);
     }
 
     @Override

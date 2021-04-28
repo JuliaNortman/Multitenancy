@@ -25,7 +25,7 @@ public class MasterDataSourceConfiguration {
     }
 
     @Bean
-    @LiquibaseDataSource
+    //@LiquibaseDataSource
     @ConfigurationProperties("multitenancy.master.datasource.hikari")
     public DataSource masterDataSource() {
         HikariDataSource dataSource = masterDataSourceProperties()

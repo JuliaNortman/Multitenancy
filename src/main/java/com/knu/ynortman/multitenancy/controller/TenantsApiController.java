@@ -7,8 +7,6 @@ import com.knu.ynortman.multitenancy.database.repository.TenantRepository;
 import com.knu.ynortman.multitenancy.database.service.TenantManagementService;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,12 +50,15 @@ public class TenantsApiController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createTenant(@RequestBody TenantDto tenant){
         try {
-            tenantManagementService.createTenant(tenant.getTenantId(), tenant.getDb(), tenant.getPassword());
+            tenantManagementService.createTenant(tenant);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (TenantCreationException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     } 
+    
+    
+    
     
     @PostMapping(path = "/test/database/drop/{n}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteDatabases(@PathVariable Integer n){
@@ -77,8 +78,9 @@ public class TenantsApiController {
 		final String urlPrefix = "jdbc:postgresql://localhost:5432/";
 		for (int i = 0; i < n; ++i) {
 			String tenantId = "tenant" + (i + 1);
+			String driver = "org.postgresql.Driver";
 			Tenant tenant = Tenant.builder().tenantId(tenantId).db(tenantId).url(urlPrefix + tenantId)
-					.password("r513hsugCU6I6C+vMT/gqQ==").build();
+					.password("r513hsugCU6I6C+vMT/gqQ==").driver(driver).build();
 			tenantRepository.save(tenant);
 			
 		}

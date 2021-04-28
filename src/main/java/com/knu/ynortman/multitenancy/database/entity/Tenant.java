@@ -19,16 +19,18 @@ import javax.persistence.Id;
 public class Tenant {
 
     @Id
-    @Column(name = "tenant_id")
+    //@Column(name = "tenant_id")
     private String tenantId;
 
-    @Column(name = "db")
+    //@Column(name = "db")
     private String db;
 
-    @Column(name = "password")
+    //@Column(name = "password")
     private String password;
 
-    @Column(name = "url")
+    //@Column(name = "url")
     private String url;
+    
+    private String driver;
 
 }

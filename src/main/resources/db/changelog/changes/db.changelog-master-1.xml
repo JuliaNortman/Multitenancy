@@ -15,9 +15,12 @@
                 <constraints primaryKey="true"
                              primaryKeyName="tenant_pk"/>
             </column>
-            <column name="db" type="varchar" />
+            <column name="db" type="varchar">
+            	<constraints primaryKey="true"/>
+            </column>
             <column name="password" type="varchar" />
             <column name="url" type="varchar" />
+            <column name="driver" type="varchar" />
         </createTable>
         <rollback>
             <dropTable tableName="tenant"/>
