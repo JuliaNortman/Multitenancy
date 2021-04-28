@@ -37,11 +37,11 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
 
     @Autowired
     @Qualifier("masterDataSource")
-    private DataSource masterDataSource;
+    private DataSource masterDataSource; 
 
-    @Autowired
+    /*@Autowired
     @Qualifier("commonDataSource")
-    private DataSource commonDataSource;
+    private DataSource commonDataSource;*/
 
     @Autowired
     @Qualifier("masterDataSourceProperties")
@@ -49,7 +49,7 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
 
     /*@Autowired
     private TenantRepository masterTenantRepository;*/
-
+ 
     @Autowired
     private TenantManagementService tenantManagementService;
 
@@ -74,7 +74,7 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
                 .expireAfterAccess(expireAfterAccess, TimeUnit.MINUTES)
                 .removalListener((RemovalListener<String, DataSource>) removal -> {
                     HikariDataSource ds = (HikariDataSource) removal.getValue();
-                    ds.close(); // tear down properly
+                    ds.close(); 
                     log.info("Closed datasource: {}", ds.getPoolName());
                 })
                 .build(new CacheLoader<>() {
@@ -89,7 +89,7 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
     @Override
     protected DataSource selectAnyDataSource() {
         log.info("SELECT ANY DATASOURCE");
-        return commonDataSource;
+        return masterDataSource;
     }
 
     @Override
@@ -104,14 +104,14 @@ public class DynamicDataSourceBasedMultiTenantConnectionProvider
 
     private DataSource createAndConfigureDataSource(Tenant tenant) {
         String decryptedPassword = encryptionService.decrypt(tenant.getPassword(), secret, salt);
-        log.info("decrypted password: " + decryptedPassword);
         HikariDataSource ds = dataSourceProperties.initializeDataSourceBuilder()
                 .type(HikariDataSource.class).build();
 
         ds.setUsername(tenant.getDb());
         ds.setPassword(decryptedPassword);
         ds.setJdbcUrl(tenant.getUrl());
-
+        
+        
         ds.setPoolName(tenant.getTenantId() + TENANT_POOL_NAME_SUFFIX);
 
         log.info("Configured datasource: {}", ds.getPoolName());

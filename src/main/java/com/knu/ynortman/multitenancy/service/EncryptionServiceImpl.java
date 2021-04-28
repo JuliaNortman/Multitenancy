@@ -1,8 +1,12 @@
 package com.knu.ynortman.multitenancy.service;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -13,10 +17,12 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
+@Slf4j
 @Service
 public class EncryptionServiceImpl implements EncryptionService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(EncryptionServiceImpl.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(EncryptionServiceImpl.class);
+    
 
     public static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA256";
     public static final String CIPHER = "AES/CBC/PKCS5Padding";
@@ -26,6 +32,8 @@ public class EncryptionServiceImpl implements EncryptionService {
 
     @Override
     public String encrypt(String strToEncrypt, String secret, String salt) {
+    	if(strToEncrypt == null) return "";
+    	
         try
         {
             byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -40,13 +48,14 @@ public class EncryptionServiceImpl implements EncryptionService {
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivspec);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } catch (Exception e) {
-            LOG.error("Error while encrypting: ", e);
+            log.error("Error while encrypting: ", e);
             return null;
         }
     }
 
     @Override
     public String decrypt(String strToDecrypt, String secret, String salt) {
+    	if(StringUtils.isAllBlank(strToDecrypt)) return null;
         try
         {
             byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -61,8 +70,8 @@ public class EncryptionServiceImpl implements EncryptionService {
             cipher.init(Cipher.DECRYPT_MODE, secretKey, ivspec);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } catch (Exception e) {
-            LOG.error("Error while decrypting: ", e);
-            return null;
+            log.error("Error while decrypting: ", e);
+            return null; 
         }
     }
 

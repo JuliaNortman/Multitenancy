@@ -42,8 +42,8 @@ import java.util.concurrent.Future;
 //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements InitializingBean, ResourceLoaderAware {
 
-    @Autowired
-    private EncryptionService encryptionService;
+    /*@Autowired
+    private EncryptionService encryptionService;*/
 
     /*@Autowired
     private TenantRepository tenantRepository;*/
@@ -58,11 +58,11 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
     @Qualifier("tenantLiquibaseProperties")
     private LiquibaseProperties liquibaseProperties;
 
-    @Value("${encryption.secret}")
+    /*@Value("${encryption.secret}")
     private String secret;
 
     @Value("${encryption.salt}")
-    private String salt;
+    private String salt;*/
 
     private ResourceLoader resourceLoader;
 
@@ -72,7 +72,7 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
 	@Override
 	public void afterPropertiesSet() {
 		log.info("DynamicDataSources based multitenancy enabled");
-		LiquibaseRunner.runAllTenantsAsync(tenantManagementService.findAll(), resourceLoader);
+		LiquibaseRunner.runAllTenantsSync(tenantManagementService.findAll(), resourceLoader);
 		//LiquibaseRunner.runAllTenantsSync(tenantManagementService.findAll(), resourceLoader);
 	}
 

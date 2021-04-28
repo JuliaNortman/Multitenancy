@@ -1,15 +1,16 @@
 package com.knu.ynortman.multitenancy.database.service;
 
-import com.knu.ynortman.multitenancy.service.EncryptionService;
-import com.knu.ynortman.multitenancy.exception.TenantCreationException;
-import com.knu.ynortman.multitenancy.database.repository.TenantRepositoryDb;
-import liquibase.exception.LiquibaseException;
-import liquibase.integration.spring.SpringLiquibase;
-import lombok.extern.slf4j.Slf4j;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.ResourceLoader;
@@ -20,15 +21,13 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Service;
 
 import com.knu.ynortman.multitenancy.database.entity.Tenant;
-import com.knu.ynortman.multitenancy.database.repository.TenantRepositoryDb;
+import com.knu.ynortman.multitenancy.database.repository.TenantRepository;
+import com.knu.ynortman.multitenancy.exception.TenantCreationException;
+import com.knu.ynortman.multitenancy.service.EncryptionService;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import liquibase.exception.LiquibaseException;
+import liquibase.integration.spring.SpringLiquibase;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -41,9 +40,9 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     private final JdbcTemplate jdbcTemplate;
     private final LiquibaseProperties liquibaseProperties;
     private final ResourceLoader resourceLoader;
-    private final TenantRepositoryDb tenantRepository;
+    private final TenantRepository tenantRepository;
 
-    private final String urlPrefix;
+    //private final String urlPrefix;
     private final String secret;
     private final String salt;
 
@@ -54,10 +53,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
                                        @Qualifier("tenantLiquibaseProperties")
                                                LiquibaseProperties liquibaseProperties,
                                        ResourceLoader resourceLoader,
-                                       @Qualifier("tenantRepositoryDb")
-                                       TenantRepositoryDb tenantRepository,
-                                       //@Value("${multitenancy.tenant.datasource.url-prefix}")
-                                               //String urlPrefix,
+                                       //@Qualifier("tenantRepository")
+                                       TenantRepository tenantRepository,
                                        @Value("${encryption.secret}")
                                                String secret,
                                        @Value("${encryption.salt}")
@@ -69,7 +66,7 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         this.liquibaseProperties = liquibaseProperties;
         this.resourceLoader = resourceLoader;
         this.tenantRepository = tenantRepository;
-        this.urlPrefix = "jdbc:postgresql://localhost:5432/";
+        //this.urlPrefix = "jdbc:postgresql://localhost:5432/";
         this.secret = secret;
         this.salt = salt;
         log.info("TENANT MANAGEMENT SERVICE"); 
@@ -78,14 +75,14 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     private static final String VALID_DATABASE_NAME_REGEXP = "[A-Za-z0-9_]*";
 
     @Override
-    public void createTenant(String tenantId, String db, String password) throws TenantCreationException {
+    public void createTenant(String tenantId, String url, String password) throws TenantCreationException {
 
+    	String db = url.substring(url.lastIndexOf('/')+1, url.length());   	
         // Verify db string to prevent SQL injection
         if (!db.matches(VALID_DATABASE_NAME_REGEXP)) {
             throw new TenantCreationException("Invalid db name: " + db);
         }
-
-        String url = urlPrefix+db;
+        
         String encryptedPassword = encryptionService.encrypt(password, secret, salt);
         try {
             createDatabase(db, password);
@@ -115,7 +112,7 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         return tenantRepository.findAll();
     }
 
-    @Override
+    @Override 
     public Optional<Tenant> findByTenantId(String tenantId) {
         return tenantRepository.findByTenantId(tenantId);
     }

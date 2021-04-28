@@ -60,6 +60,7 @@ multitenancy:
     entityManager:
       packages: com.knu.ynortman.entity
     datasource:
+      driverClassName: org.postgresql.Driver
       hikari:
         maximumPoolSize: 2
         minimumIdle: 0

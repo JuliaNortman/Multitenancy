@@ -48,7 +48,7 @@ public class AsyncLiquibase {
     @Async 
     public Future<String> runLiquibase(Tenant tenant, ResourceLoader resourceLoader)
             throws LiquibaseException {
-        log.info("AsyncWorkerFuture: start current thread [" + Thread.currentThread().getName() + "]");
+        log.info("AsyncWorkerFuture: start current thread [" + Thread.currentThread().getName() + "] " + secret);
         encryptionService = new EncryptionServiceImpl();
         String decryptedPassword = encryptionService.decrypt(tenant.getPassword(), secret, salt);
         try {

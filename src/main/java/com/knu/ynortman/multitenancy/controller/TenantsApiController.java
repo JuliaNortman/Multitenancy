@@ -3,7 +3,7 @@ package com.knu.ynortman.multitenancy.controller;
 import com.knu.ynortman.multitenancy.exception.TenantCreationException;
 import com.knu.ynortman.multitenancy.database.entity.Tenant;
 import com.knu.ynortman.multitenancy.database.model.TenantDto;
-import com.knu.ynortman.multitenancy.database.repository.TenantRepositoryDb;
+import com.knu.ynortman.multitenancy.database.repository.TenantRepository;
 import com.knu.ynortman.multitenancy.database.service.TenantManagementService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,7 +28,7 @@ public class TenantsApiController {
     private TenantManagementService tenantManagementService;
     
     @Autowired
-    private TenantRepositoryDb tenantRepository;
+    private TenantRepository tenantRepository;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
