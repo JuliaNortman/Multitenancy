@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -28,6 +29,7 @@ import java.util.concurrent.Future;
 @Slf4j
 @EnableAsync
 @Component
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class AsyncLiquibase {
 
 	@Autowired

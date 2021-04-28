@@ -2,8 +2,6 @@
 #spring.datasource.username=postgres
 #spring.datasource.password=oK16081969
 #spring.datasource.driver-class-name=org.postgresql.Driver
-aspect:
-  enabled: true
 
 spring:
   #datasource:
@@ -21,7 +19,16 @@ spring:
 multitenancy:
   strategy: database
 
-  default-tenant:
+  
+
+  datasource-cache:
+    maximumSize: 100
+    expireAfterAccess: 10
+  schema-cache:
+    maximumSize: 100
+    expireAfterAccess: 10
+
+  common:
     repository:
       packages: com.knu.ynortman.sharedrepository
     entityManager:
@@ -33,14 +40,7 @@ multitenancy:
     liquibase:
       enabled: true
       changeLog: classpath:db/changelog/db.changelog-common.yaml
-
-  datasource-cache:
-    maximumSize: 100
-    expireAfterAccess: 10
-  schema-cache:
-    maximumSize: 100
-    expireAfterAccess: 10
-
+  
   master:
     schema: master
     repository:

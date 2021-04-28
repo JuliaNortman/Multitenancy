@@ -10,7 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 @Entity
 @Data
 @AllArgsConstructor

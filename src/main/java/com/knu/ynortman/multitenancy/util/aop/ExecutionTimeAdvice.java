@@ -24,8 +24,6 @@ public class ExecutionTimeAdvice {
 
 	@Around("@annotation(TrackExecutionTime)")
 	public Object executionTime(ProceedingJoinPoint point) throws Throwable {
-		log.info("MEASUREMENT STARTED");
-		
 		long startTime = System.currentTimeMillis();
 		Object object = point.proceed();
 		long endtime = System.currentTimeMillis();

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -29,7 +30,7 @@ import java.util.Map;
         transactionManagerRef = "masterTransactionManager"
 )
 @EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "datasource")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class MasterPersistenceConfig {
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;

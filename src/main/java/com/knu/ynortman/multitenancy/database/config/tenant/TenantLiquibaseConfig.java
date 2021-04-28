@@ -25,12 +25,14 @@ public class TenantLiquibaseConfig {
     private String multitenantStrategy;
 
     @Bean
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     @ConfigurationProperties("multitenancy.tenant.liquibase")
     public LiquibaseProperties tenantLiquibaseProperties() {
         return new LiquibaseProperties();
     }
 
     @Bean
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public InitializingBean tenantLiquibase() {
         log.info("Strategy " + multitenantStrategy); 
         return new DynamicDataSourceBasedMultiTenantSpringLiquibase();

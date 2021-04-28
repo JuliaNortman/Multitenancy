@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,9 +26,9 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "datasource")
+@ConditionalOnProperty(prefix = "multitenancy.common.datasource", name = "url")
 @EnableJpaRepositories(
-        basePackages = { "${multitenancy.default-tenant.repository.packages}" },
+        basePackages = { "${multitenancy.common.repository.packages}" },
         entityManagerFactoryRef = "commonEntityManagerFactory",
         transactionManagerRef = "commonTransactionManager"
 )
@@ -40,7 +41,7 @@ public class CommonPersistenceConfig {
     @Autowired
     public CommonPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
                                    JpaProperties jpaProperties,
-                                   @Value("${multitenancy.default-tenant.entityManager.packages}")
+                                   @Value("${multitenancy.common.entityManager.packages}")
                                            String entityPackages) {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
@@ -49,6 +50,7 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(
             @Qualifier("commonDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -70,6 +72,7 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public JpaTransactionManager commonTransactionManager(
             @Qualifier("commonEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();

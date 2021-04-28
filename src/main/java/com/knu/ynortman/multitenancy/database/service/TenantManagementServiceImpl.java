@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.io.ResourceLoader;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import com.knu.ynortman.multitenancy.database.entity.Tenant;
 import com.knu.ynortman.multitenancy.database.model.TenantDto;
 import com.knu.ynortman.multitenancy.database.repository.TenantRepository;
+import com.knu.ynortman.multitenancy.database.util.DatabaseUtils;
 import com.knu.ynortman.multitenancy.exception.TenantCreationException;
 import com.knu.ynortman.multitenancy.service.EncryptionService;
 
@@ -33,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @EnableConfigurationProperties(LiquibaseProperties.class)
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class TenantManagementServiceImpl implements TenantManagementService {
 
     private final EncryptionService encryptionService;
@@ -46,6 +48,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     //private final String urlPrefix;
     private final String secret;
     private final String salt;
+    
+    private final DatabaseUtils databaseUtils;
 
     @Autowired
     public TenantManagementServiceImpl(EncryptionService encryptionService,
@@ -59,7 +63,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
                                        @Value("${encryption.secret}")
                                                String secret,
                                        @Value("${encryption.salt}")
-                                               String salt
+                                               String salt,
+                                       DatabaseUtils databaseUtils
     ) {
         this.encryptionService = encryptionService;
         this.dataSource = dataSource;
@@ -70,6 +75,7 @@ public class TenantManagementServiceImpl implements TenantManagementService {
         //this.urlPrefix = "jdbc:postgresql://localhost:5432/";
         this.secret = secret;
         this.salt = salt;
+        this.databaseUtils = databaseUtils;
         log.info("TENANT MANAGEMENT SERVICE"); 
     }
 
@@ -123,6 +129,9 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     @Override
     public void createDatabase(String db, String password) {
         log.info("BEFORE DATABASE CREATE");
+        /*databaseUtils.createDatabase(db, jdbcTemplate);
+        databaseUtils.createUser(db, password, jdbcTemplate);
+        databaseUtils.grantPrivileges(db, db, jdbcTemplate);*/
         jdbcTemplate.execute((StatementCallback<Boolean>) stmt ->
                 stmt.execute("CREATE DATABASE " + db));
         log.info("AFTER DATABASE CREATE");

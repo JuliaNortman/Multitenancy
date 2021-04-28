@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Component
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class DynamicDataSourceBasedMultiTenantConnectionProvider
         extends AbstractDataSourceBasedMultiTenantConnectionProviderImpl {
 

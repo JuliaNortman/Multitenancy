@@ -15,7 +15,7 @@ import javax.sql.DataSource;
 
 @Component
 @Configuration
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class MasterDataSourceConfiguration {
 
     @Bean

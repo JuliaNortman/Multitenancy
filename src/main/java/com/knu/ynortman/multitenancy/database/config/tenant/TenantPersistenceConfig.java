@@ -33,7 +33,7 @@ import java.util.Map;
         entityManagerFactoryRef = "tenantEntityManagerFactory",
         transactionManagerRef = "tenantTransactionManager"
 )
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 @EnableConfigurationProperties(JpaProperties.class)
 public class TenantPersistenceConfig {
 

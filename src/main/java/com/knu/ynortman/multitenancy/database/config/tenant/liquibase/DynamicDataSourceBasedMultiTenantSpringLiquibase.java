@@ -39,7 +39,7 @@ import java.util.concurrent.Future;
 @Getter
 @Setter
 @Slf4j
-//@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
 public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements InitializingBean, ResourceLoaderAware {
 
     /*@Autowired
@@ -72,7 +72,7 @@ public class DynamicDataSourceBasedMultiTenantSpringLiquibase implements Initial
 	@Override
 	public void afterPropertiesSet() {
 		log.info("DynamicDataSources based multitenancy enabled");
-		LiquibaseRunner.runAllTenantsSync(tenantManagementService.findAll(), resourceLoader);
+		LiquibaseRunner.runAllTenantsAsync(tenantManagementService.findAll(), resourceLoader);
 		//LiquibaseRunner.runAllTenantsSync(tenantManagementService.findAll(), resourceLoader);
 	}
 

@@ -1,6 +1,8 @@
 package com.knu.ynortman.multitenancy.database.config.common;
 
 import liquibase.integration.spring.SpringLiquibase;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
@@ -12,19 +14,22 @@ import org.springframework.context.annotation.Lazy;
 
 import javax.sql.DataSource;
 
+@Slf4j
 @Lazy(false)
 @Configuration
 @EnableConfigurationProperties(LiquibaseProperties.class)
-@ConditionalOnProperty(name = "multitenancy.default-tenant.liquibase.enabled", havingValue = "true",
-matchIfMissing = true)
+@ConditionalOnProperty(prefix = "multitenancy.common.liquibase", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class CommonLiquibaseConfig {
     @Bean
-    @ConfigurationProperties("multitenancy.default-tenant.liquibase")
+    @ConfigurationProperties("multitenancy.common.liquibase")
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LiquibaseProperties commonLiquibaseProperties() {
+    	log.info("COMMON LIQUIBASE");
         return new LiquibaseProperties();
     }
 
     @Bean(name = "commonLiquibase")
+    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public SpringLiquibase liquibase(@Qualifier("commonDataSource") DataSource liquibaseDataSource) {
         LiquibaseProperties liquibaseProperties = commonLiquibaseProperties();
         SpringLiquibase liquibase = new SpringLiquibase();
