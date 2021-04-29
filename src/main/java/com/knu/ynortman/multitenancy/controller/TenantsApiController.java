@@ -25,18 +25,18 @@ public class TenantsApiController {
     @Autowired(required = false)
     private TenantManagementService tenantManagementService;
     
-    @Autowired
+    @Autowired(required = false)
     private TenantRepository tenantRepository;
     
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-   /*@Autowired(required = false)
+   @Autowired(required = false)
     private com.knu.ynortman.multitenancy.schema.service.TenantManagementService
-            schemaBasedTenantManagementService;*/
+            schemaBasedTenantManagementService;
 
 
-    /*@PostMapping(path = "/schema", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/schema", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createTenant(
             @RequestBody com.knu.ynortman.multitenancy.schema.model.TenantDto tenant) {
         try {
@@ -45,7 +45,7 @@ public class TenantsApiController {
         } catch (TenantCreationException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }*/
+    }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createTenant(@RequestBody TenantDto tenant){

@@ -1,4 +1,4 @@
-package com.knu.ynortman.multitenancy.database.config.common;
+package com.knu.ynortman.multitenancy.schema.config.common;
 
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.AvailableSettings;
@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -27,32 +27,31 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
-@ConditionalOnProperty(prefix = "multitenancy.common.datasource", name = "url")
-@ConditionalOnExpression("'${multitenancy.strategy}'.equals('database')")
+//@Order(2)
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "schema")
 @EnableJpaRepositories(
         basePackages = { "${multitenancy.common.repository.packages}" },
         entityManagerFactoryRef = "commonEntityManagerFactory",
         transactionManagerRef = "commonTransactionManager"
 )
 @EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
-public class CommonPersistenceConfig {
+public class CommonSchemaPersistenceConfig {
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
     private final String entityPackages;
 
     @Autowired
-    public CommonPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
+    public CommonSchemaPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
                                    JpaProperties jpaProperties,
                                    @Value("${multitenancy.common.entityManager.packages}")
                                            String entityPackages) {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = entityPackages;
-        log.info("COMMON PERSISTENCE CONFIG"); 
+        log.info("COMMON PERSISTENCE CONFIG");
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(
             @Qualifier("commonDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -74,7 +73,6 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public JpaTransactionManager commonTransactionManager(
             @Qualifier("commonEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();

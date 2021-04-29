@@ -18,6 +18,8 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.HashMap;
@@ -31,6 +33,7 @@ import java.util.Map;
 )
 @EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
 @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+@Slf4j
 public class MasterPersistenceConfig {
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
@@ -44,6 +47,7 @@ public class MasterPersistenceConfig {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = entityPackages;
+        log.info("MASTER PERSISTENCE CONFIG");
     }
 
     @Bean 

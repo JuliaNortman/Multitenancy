@@ -30,13 +30,13 @@ public class MasterLiquibaseConfig {
 	
     @Bean
     @ConfigurationProperties("multitenancy.master.liquibase")
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LiquibaseProperties masterLiquibaseProperties() {
         return new LiquibaseProperties();
     }
 
     @Bean("masterLiquibase")
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public SpringLiquibase liquibase(@Qualifier("masterDataSource") DataSource liquibaseDataSource) {
         LiquibaseProperties liquibaseProperties = masterLiquibaseProperties();
         SpringLiquibase liquibase = new SpringLiquibase();

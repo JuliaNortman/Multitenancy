@@ -1,24 +1,28 @@
-package com.knu.ynortman.multitenancy.database.config.common;
+package com.knu.ynortman.multitenancy.schema.config.master;
 
-import lombok.extern.slf4j.Slf4j;
+
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.stereotype.Component;
+
+import com.knu.ynortman.multitenancy.schema.config.tenant.TenantPersistenceConfig;
+
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -26,38 +30,35 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Configuration
-@ConditionalOnProperty(prefix = "multitenancy.common.datasource", name = "url")
-@ConditionalOnExpression("'${multitenancy.strategy}'.equals('database')")
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "schema")
 @EnableJpaRepositories(
-        basePackages = { "${multitenancy.common.repository.packages}" },
-        entityManagerFactoryRef = "commonEntityManagerFactory",
-        transactionManagerRef = "commonTransactionManager"
+        basePackages = {"${multitenancy.master.repository.packages}"},
+        entityManagerFactoryRef = "masterEntityManagerFactory",
+        transactionManagerRef = "masterTransactionManager"
 )
-@EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
-public class CommonPersistenceConfig {
+public class MasterPersistenceConfig {
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
     private final String entityPackages;
 
     @Autowired
-    public CommonPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
+    public MasterPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
                                    JpaProperties jpaProperties,
-                                   @Value("${multitenancy.common.entityManager.packages}")
+                                   @Value("${multitenancy.master.entityManager.packages}")
                                            String entityPackages) {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
         this.entityPackages = entityPackages;
-        log.info("COMMON PERSISTENCE CONFIG"); 
+        log.info("MASTER PERSISTENCE CONFIG");
     }
-
+    
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
-    public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(
-            @Qualifier("commonDataSource") DataSource dataSource) {
+    public LocalContainerEntityManagerFactoryBean masterEntityManagerFactory(@Qualifier("masterDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
-        em.setPersistenceUnitName("common-persistence-unit");
+        em.setPersistenceUnitName("master-persistence-unit");
         em.setPackagesToScan(entityPackages);
         em.setDataSource(dataSource);
 
@@ -74,9 +75,8 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
-    public JpaTransactionManager commonTransactionManager(
-            @Qualifier("commonEntityManagerFactory") EntityManagerFactory emf) {
+    public JpaTransactionManager masterTransactionManager(
+            @Qualifier("masterEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;

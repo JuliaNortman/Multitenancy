@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,10 +18,11 @@ import javax.sql.DataSource;
 @Configuration
 @Slf4j
 @ConditionalOnProperty(prefix = "multitenancy.common.datasource", name = "url")
+@ConditionalOnExpression("'${multitenancy.strategy}'.equals('database')")
 public class CommonDataSourceConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     @ConfigurationProperties("multitenancy.common.datasource")
     public DataSourceProperties commonDataSourceProperties() {
     	log.info("COMMON DATA SOURCE CONFIG");
@@ -28,7 +30,7 @@ public class CommonDataSourceConfig {
     }
 
     @Bean
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     //@ConfigurationProperties("multitenancy.default-tenant.datasource.hikari")
     public DataSource commonDataSource() {
         HikariDataSource dataSource = commonDataSourceProperties()

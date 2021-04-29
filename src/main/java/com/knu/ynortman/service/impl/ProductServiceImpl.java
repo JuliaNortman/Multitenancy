@@ -15,7 +15,7 @@ import java.util.stream.StreamSupport;
 @Service
 public class ProductServiceImpl implements ProductService {
 
-	@Override
+	/*@Override
 	public List<ProductDto> getProducts() {
 		// TODO Auto-generated method stub
 		return null;
@@ -31,8 +31,8 @@ public class ProductServiceImpl implements ProductService {
 	public ProductDto createProduct(ProductDto product) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-    /*private final ProductRepository productRepo;
+	}*/
+    private final ProductRepository productRepo;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepo) {
@@ -57,5 +57,5 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto createProduct(ProductDto productDto) {
         Product product = productRepo.save(ProductDto.toProduct(productDto));
         return ProductDto.fromProduct(product);
-    }*/
+    }
 }

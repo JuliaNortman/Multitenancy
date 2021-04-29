@@ -22,14 +22,14 @@ import javax.sql.DataSource;
 public class CommonLiquibaseConfig {
     @Bean
     @ConfigurationProperties("multitenancy.common.liquibase")
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LiquibaseProperties commonLiquibaseProperties() {
     	log.info("COMMON LIQUIBASE");
         return new LiquibaseProperties();
     }
 
     @Bean(name = "commonLiquibase")
-    @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
+    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public SpringLiquibase liquibase(@Qualifier("commonDataSource") DataSource liquibaseDataSource) {
         LiquibaseProperties liquibaseProperties = commonLiquibaseProperties();
         SpringLiquibase liquibase = new SpringLiquibase();
