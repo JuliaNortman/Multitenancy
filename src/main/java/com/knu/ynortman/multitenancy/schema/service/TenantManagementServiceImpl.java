@@ -89,7 +89,8 @@ public class TenantManagementServiceImpl implements TenantManagementService {
     	return tenantRepository.findById(id);
     }
     
-    private void createSchema(String schema) {
+    @Override
+    public void createSchema(String schema) {
         jdbcTemplate.execute((StatementCallback<Boolean>) stmt -> stmt.execute("CREATE SCHEMA " + schema));
     }
 

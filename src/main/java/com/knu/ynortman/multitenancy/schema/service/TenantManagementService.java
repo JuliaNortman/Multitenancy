@@ -10,4 +10,5 @@ public interface TenantManagementService {
     void createTenant(String tenantId, String schema) throws TenantCreationException;
     List<Tenant> findAll();
     Optional<Tenant> findByTenantId(String id);
+    void createSchema(String schema);
 }

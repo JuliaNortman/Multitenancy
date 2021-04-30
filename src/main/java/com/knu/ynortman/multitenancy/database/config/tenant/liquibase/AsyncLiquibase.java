@@ -50,7 +50,7 @@ public class AsyncLiquibase {
     @Async 
     public Future<String> runLiquibase(Tenant tenant, ResourceLoader resourceLoader)
             throws LiquibaseException {
-        log.info("AsyncWorkerFuture: start current thread [" + Thread.currentThread().getName() + "] " + secret);
+        log.info("AsyncWorkerFuture: start current thread [" + Thread.currentThread().getName() + "] ");
         encryptionService = new EncryptionServiceImpl();
         String decryptedPassword = encryptionService.decrypt(tenant.getPassword(), secret, salt);
         try {
@@ -71,6 +71,8 @@ public class AsyncLiquibase {
         log.info("AsyncWorkerFuture: end current thread [" + Thread.currentThread().getName() + "]");
         return new AsyncResult<>(Thread.currentThread().getName());
     }
+    
+    
     
     protected SpringLiquibase getSpringLiquibase(DataSource dataSource, ResourceLoader resourceLoader) {
         SpringLiquibase liquibase = new SpringLiquibase();

@@ -1,4 +1,4 @@
-package com.knu.ynortman.repository;
+package com.knu.ynortman.sharedrepository;
 
 import org.springframework.data.repository.CrudRepository;
 

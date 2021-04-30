@@ -2,8 +2,9 @@ package com.knu.ynortman.service.impl;
 
 import com.knu.ynortman.dto.ProductDto;
 import com.knu.ynortman.entity.Product;
-import com.knu.ynortman.repository.ProductRepository;
 import com.knu.ynortman.service.ProductService;
+import com.knu.ynortman.sharedrepository.ProductRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -17,7 +17,7 @@ import com.knu.ynortman.multitenancy.discriminator.entity.AbstractBaseEntity;
 @Builder
 @Entity
 @Table(name = "user_details")
-public class User extends AbstractBaseEntity {
+public class User /*extends AbstractBaseEntity*/ {
     @Id
     private long id;
     private String name;

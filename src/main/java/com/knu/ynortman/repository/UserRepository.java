@@ -9,9 +9,9 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface UserRepository extends CrudRepository<User, Long> {
 	
-	@Query("SELECT u FROM User u")
+	/*@Query("SELECT u FROM User u")
 	Iterable<User> findAll();
 	
 	@Query("SELECT u FROM User u WHERE u.id = :id")
-    Optional<User> findById(long id);
+    Optional<User> findById(long id);*/
 }

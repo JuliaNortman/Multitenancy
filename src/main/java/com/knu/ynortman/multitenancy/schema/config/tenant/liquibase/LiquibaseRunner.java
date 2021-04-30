@@ -1,60 +1,49 @@
 package com.knu.ynortman.multitenancy.schema.config.tenant.liquibase;
 
-import com.knu.ynortman.multitenancy.schema.service.TenantManagementService;
-import com.knu.ynortman.multitenancy.schema.config.tenant.liquibase.LiquibaseRunner;
-import com.knu.ynortman.multitenancy.schema.entity.Tenant;
-import com.knu.ynortman.multitenancy.schema.repository.TenantRepository;
-import liquibase.exception.LiquibaseException;
-import liquibase.integration.spring.SpringLiquibase;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
-import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.util.Collection;
-import java.util.List;
+import com.knu.ynortman.multitenancy.schema.entity.Tenant;
+import com.knu.ynortman.multitenancy.schema.service.TenantManagementService;
+import com.knu.ynortman.multitenancy.util.aop.TrackExecutionTime;
 
-/**
- * Based on MultiTenantSpringLiquibase, this class provides Liquibase support for
- * multi-tenancy based on a dynamic collection of DataSources.
- */
-@Getter
-@Setter
+import liquibase.exception.LiquibaseException;
+import liquibase.integration.spring.SpringLiquibase;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
+@Component
 @ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "schema")
-public class DynamicSchemaBasedMultiTenantSpringLiquibase implements InitializingBean, ResourceLoaderAware {
-
-    @Autowired
-    private TenantManagementService tenantManagementService;
-    //private TenantRepository masterTenantRepository;
-
-    @Autowired
-    @Qualifier("tenantDataSource")
-    private DataSource dataSource;
-
-    @Autowired
+public class LiquibaseRunner {
+	
+	@Autowired
     @Qualifier("tenantLiquibaseProperties")
     private LiquibaseProperties liquibaseProperties;
-    
-    @Autowired
-    private LiquibaseRunner liquibaseRunner;
-
-    private ResourceLoader resourceLoader;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        log.info("Schema based multitenancy enabled");
-        liquibaseRunner.runAllSchemasSync(tenantManagementService.findAll(), resourceLoader);
-    }
-
-    /*protected void runOnAllSchemas(DataSource dataSource, List<Tenant> tenants) throws LiquibaseException {
+	
+	@Autowired
+    private TenantManagementService tenantManagementService;
+	
+	@Autowired
+    @Qualifier("tenantDataSource")
+    private DataSource dataSource;
+	
+	@Autowired
+    private AsyncLiquibase asyncLiquibase;
+	
+	@TrackExecutionTime
+	public void runAllSchemasSync(List<Tenant> tenants, ResourceLoader resourceLoader) {
 		for (Tenant tenant : tenants) {
 			log.info("Initializing Liquibase for tenant " + tenant.getTenantId());
 			try {
@@ -62,15 +51,40 @@ public class DynamicSchemaBasedMultiTenantSpringLiquibase implements Initializin
 			} catch (Exception e) {
 				log.warn(e.getMessage());
 			}
-			SpringLiquibase liquibase = getSpringLiquibase(dataSource, tenant.getSchema());
-			liquibase.afterPropertiesSet();
+			SpringLiquibase liquibase = getSpringLiquibase(dataSource, tenant.getSchema(), resourceLoader);
+			try {
+				liquibase.afterPropertiesSet();
+			} catch (LiquibaseException e) {
+				log.warn(e.getMessage());
+			}
 			log.info("Liquibase ran for tenant " + tenant.getTenantId());
 		}
-    }
-
-    protected SpringLiquibase getSpringLiquibase(DataSource dataSource, String schema) {
+	}
+	
+	@TrackExecutionTime
+	public void runAllSchemasAsync(List<Tenant> tenants, ResourceLoader resourceLoader) {
+		Collection<Future<String>> futures = new ArrayList<>(tenants.size());
+		for (Tenant tenant : tenants) {
+			try {
+				futures.add(asyncLiquibase.runLiquibase(tenant, resourceLoader));
+			} catch (LiquibaseException e) {
+				log.error("Failed to run Liquibase for tenant " + tenant.getTenantId(), e);
+			}
+			log.info("Liquibase ran for tenant " + tenant.getTenantId());
+		}
+		
+		for(Future<String> future : futures) {
+			try {
+				future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				log.warn(e.getMessage());
+			}
+		}
+	}
+	
+	protected SpringLiquibase getSpringLiquibase(DataSource dataSource, String schema, ResourceLoader resourceLoader) {
         SpringLiquibase liquibase = new SpringLiquibase();
-        liquibase.setResourceLoader(getResourceLoader());
+        liquibase.setResourceLoader(resourceLoader);
         liquibase.setDataSource(dataSource);
         liquibase.setDefaultSchema(schema);
         liquibase.setChangeLog(liquibaseProperties.getChangeLog());
@@ -86,6 +100,6 @@ public class DynamicSchemaBasedMultiTenantSpringLiquibase implements Initializin
         liquibase.setRollbackFile(liquibaseProperties.getRollbackFile());
         liquibase.setTestRollbackOnUpdate(liquibaseProperties.isTestRollbackOnUpdate());
         return liquibase;
-    }*/
+    }
 
 }

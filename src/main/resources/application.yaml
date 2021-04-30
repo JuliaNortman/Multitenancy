@@ -5,7 +5,7 @@
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/discriminator
+    url: jdbc:postgresql://localhost:5432/schemadb
     username: postgres
     password: oK16081969
 
@@ -18,7 +18,7 @@ spring:
     open-in-view: false
 multitenancy:
 
-  strategy: discriminator
+  strategy: schema
 
   
 
