@@ -22,8 +22,6 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-import com.knu.ynortman.multitenancy.schema.config.master.MasterPersistenceConfig;
-
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.EntityManagerFactory;

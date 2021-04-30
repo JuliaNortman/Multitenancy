@@ -2,6 +2,7 @@ package com.knu.ynortman.multitenancy.schema.config.tenant;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @ConditionalOnProperty(name = "multitenancy.tenant.liquibase.enabled", havingValue = "true",
         matchIfMissing = true)
+@ConditionalOnExpression("'${multitenancy.strategy}'.equals('schema')")
 @EnableConfigurationProperties(LiquibaseProperties.class)
 public class TenantSchemaLiquibaseConfig {
 

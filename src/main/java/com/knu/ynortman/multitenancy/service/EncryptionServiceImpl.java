@@ -20,10 +20,7 @@ import java.util.Base64;
 @Slf4j
 @Service
 public class EncryptionServiceImpl implements EncryptionService {
-
-    //private static final Logger LOG = LoggerFactory.getLogger(EncryptionServiceImpl.class);
-    
-
+	
     public static final String HASH_ALGORITHM = "PBKDF2WithHmacSHA256";
     public static final String CIPHER = "AES/CBC/PKCS5Padding";
     public static final String KEY_ALGORITHM = "AES";

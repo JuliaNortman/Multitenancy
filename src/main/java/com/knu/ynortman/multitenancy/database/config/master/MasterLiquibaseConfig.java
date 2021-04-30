@@ -13,9 +13,12 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ResourceLoader;
+
+import com.knu.ynortman.multitenancy.util.condition.SchemaOrDatabaseCondition;
 
 import javax.sql.DataSource;
 
@@ -24,19 +27,18 @@ import javax.sql.DataSource;
 @EnableConfigurationProperties(LiquibaseProperties.class)
 @ConditionalOnProperty(name = "multitenancy.master.liquibase.enabled", havingValue = "true",
         matchIfMissing = true)
+@Conditional(value = SchemaOrDatabaseCondition.class)
 @Slf4j
 public class MasterLiquibaseConfig {
 
 	
     @Bean
     @ConfigurationProperties("multitenancy.master.liquibase")
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LiquibaseProperties masterLiquibaseProperties() {
         return new LiquibaseProperties();
     }
 
     @Bean("masterLiquibase")
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public SpringLiquibase liquibase(@Qualifier("masterDataSource") DataSource liquibaseDataSource) {
         LiquibaseProperties liquibaseProperties = masterLiquibaseProperties();
         SpringLiquibase liquibase = new SpringLiquibase();

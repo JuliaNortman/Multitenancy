@@ -1,0 +1,15 @@
+<!DOCTYPE aspectj PUBLIC
+        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+
+<aspectj>
+
+    <weaver options="-Xreweavable -Xset:weaveJavaxPackages=true">
+        <include within="com.knu.ynortman.multitenancy.discriminator.aop.TenantFilterAspect"/>
+        <include within="org.hibernate.internal.SessionFactoryImpl.SessionBuilderImpl"/>
+    </weaver>
+
+    <aspects>
+        <aspect name="com.knu.ynortman.multitenancy.discriminator.aop.TenantFilterAspect"/>
+    </aspects>
+
+</aspectj>

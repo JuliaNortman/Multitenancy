@@ -9,8 +9,11 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+
+import com.knu.ynortman.multitenancy.util.condition.SchemaOrDatabaseCondition;
 
 import javax.sql.DataSource;
 
@@ -18,18 +21,17 @@ import javax.sql.DataSource;
 @Lazy(false)
 @Configuration
 @EnableConfigurationProperties(LiquibaseProperties.class)
+@Conditional(value = SchemaOrDatabaseCondition.class)
 @ConditionalOnProperty(prefix = "multitenancy.common.liquibase", name = "enabled", havingValue = "true", matchIfMissing = false)
 public class CommonLiquibaseConfig {
     @Bean
     @ConfigurationProperties("multitenancy.common.liquibase")
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LiquibaseProperties commonLiquibaseProperties() {
     	log.info("COMMON LIQUIBASE");
         return new LiquibaseProperties();
     }
 
     @Bean(name = "commonLiquibase")
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public SpringLiquibase liquibase(@Qualifier("commonDataSource") DataSource liquibaseDataSource) {
         LiquibaseProperties liquibaseProperties = commonLiquibaseProperties();
         SpringLiquibase liquibase = new SpringLiquibase();

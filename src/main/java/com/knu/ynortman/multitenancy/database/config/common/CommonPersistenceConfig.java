@@ -52,7 +52,6 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(
             @Qualifier("commonDataSource") DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
@@ -74,7 +73,6 @@ public class CommonPersistenceConfig {
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     public JpaTransactionManager commonTransactionManager(
             @Qualifier("commonEntityManagerFactory") EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();

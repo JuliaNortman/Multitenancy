@@ -1,14 +1,18 @@
 package com.knu.ynortman.multitenancy.database.config.tenant.hibernate;
 
 import com.knu.ynortman.multitenancy.util.TenantContext;
+import com.knu.ynortman.multitenancy.util.condition.SchemaOrDatabaseCondition;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component("currentTenantIdentifierResolver")
+@Conditional(value = SchemaOrDatabaseCondition.class)
 public class CurrentTenantIdentifierResolverImpl implements CurrentTenantIdentifierResolver {
 
     @Override

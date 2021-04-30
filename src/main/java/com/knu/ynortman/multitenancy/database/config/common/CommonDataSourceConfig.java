@@ -22,7 +22,6 @@ import javax.sql.DataSource;
 public class CommonDataSourceConfig {
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     @ConfigurationProperties("multitenancy.common.datasource")
     public DataSourceProperties commonDataSourceProperties() {
     	log.info("COMMON DATA SOURCE CONFIG");
@@ -30,7 +29,6 @@ public class CommonDataSourceConfig {
     }
 
     @Bean
-    //@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "database")
     //@ConfigurationProperties("multitenancy.default-tenant.datasource.hikari")
     public DataSource commonDataSource() {
         HikariDataSource dataSource = commonDataSourceProperties()

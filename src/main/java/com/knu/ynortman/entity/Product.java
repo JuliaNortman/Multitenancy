@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.knu.ynortman.multitenancy.discriminator.entity.AbstractBaseEntity;
+
 @Data 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-public class Product {
+public class Product  {
     @Id
     private long id;
     private String name;

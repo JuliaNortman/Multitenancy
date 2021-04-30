@@ -1,6 +1,5 @@
-package com.knu.ynortman.multitenancy.schema.config.common;
+package com.knu.ynortman.multitenancy.discriminator.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.cfg.AvailableSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +11,6 @@ import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.hibernate5.SpringBeanContainer;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -20,43 +18,45 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import com.knu.ynortman.multitenancy.discriminator.aop.TenantFilterAspect;
+
+import lombok.extern.slf4j.Slf4j;
+
+import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @Configuration
-@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "schema")
 @EnableJpaRepositories(
-        basePackages = { "${multitenancy.common.repository.packages}" },
-        entityManagerFactoryRef = "commonEntityManagerFactory",
-        transactionManagerRef = "commonTransactionManager"
+        basePackages = { "com.knu.ynortman.repository" },
+        entityManagerFactoryRef = "entityManagerFactory",
+        transactionManagerRef = "transactionManager"
 )
 @EnableConfigurationProperties({DataSourceProperties.class, JpaProperties.class})
-public class CommonSchemaPersistenceConfig {
+@ConditionalOnProperty(name = "multitenancy.strategy", havingValue = "discriminator")
+@Slf4j
+public class PersistenceConfig {
     private final ConfigurableListableBeanFactory beanFactory;
     private final JpaProperties jpaProperties;
-    private final String entityPackages;
 
     @Autowired
-    public CommonSchemaPersistenceConfig(ConfigurableListableBeanFactory beanFactory,
-                                   JpaProperties jpaProperties,
-                                   @Value("${multitenancy.common.entityManager.packages}")
-                                           String entityPackages) {
+    public PersistenceConfig(ConfigurableListableBeanFactory beanFactory,
+                                   JpaProperties jpaProperties) {
         this.beanFactory = beanFactory;
         this.jpaProperties = jpaProperties;
-        this.entityPackages = entityPackages;
-        log.info("COMMON PERSISTENCE CONFIG");
+        log.info("PERSISTENCE CONFIG");
     }
 
-    @Bean
-    public LocalContainerEntityManagerFactoryBean commonEntityManagerFactory(
-            @Qualifier("commonDataSource") DataSource dataSource) {
+    @Bean 
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
-        em.setPersistenceUnitName("common-persistence-unit");
-        em.setPackagesToScan(entityPackages);
+        em.setPersistenceUnitName("persistence-unit");
+        em.setPackagesToScan("com.knu.ynortman");
         em.setDataSource(dataSource);
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -67,14 +67,15 @@ public class CommonSchemaPersistenceConfig {
         properties.put(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy");
         properties.put(AvailableSettings.BEAN_CONTAINER, new SpringBeanContainer(this.beanFactory));
         em.setJpaPropertyMap(properties);
+        
 
         return em;
     }
 
     @Bean
-    public JpaTransactionManager commonTransactionManager(
-            @Qualifier("commonEntityManagerFactory") EntityManagerFactory emf) {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
+    public JpaTransactionManager transactionManager(
+            @Qualifier("entityManagerFactory") EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManagerEnableFilter();
         transactionManager.setEntityManagerFactory(emf);
         return transactionManager;
     }

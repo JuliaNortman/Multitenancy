@@ -1,4 +1,4 @@
-package com.knu.ynortman.multitenancy.database.config;
+package com.knu.ynortman.multitenancy.config;
 
 import com.knu.ynortman.multitenancy.interceptor.TenantInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
